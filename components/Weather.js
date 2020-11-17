@@ -1,37 +1,54 @@
 import { useState, useEffect } from "react";
 import { Gps } from "./Gps";
-
+import { WeatherKey } from "../utils/APIKey";
 export const Weather = () => {
   const { position, error } = Gps();
-  let [dataWeather, setData] = useState({
-    mainVar: [null],
-    weather: [null],
-    sunTime: [null],
+  const [check, setCheck] = useState(false);
+  let [weather, setWeather] = useState({
+    main: null,
+    description: null,
+    icon: null,
+    tempMin: null,
+    tempMax: null,
+    temp: null,
+    humidity: null,
+    feelsLike: null,
+    sunrise: null,
+    sunset: null,
   });
-  var check1 = false;
-  var check2 = false;
+
   const getWeather = async (lat, long) => {
+    console.log("Inside fecht Weather");
     await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&appid=5e8125fc41d440e593621143f22138a1`
+      `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${long}&appid=${WeatherKey}&units=metric`
     )
       .then((response) => response.json())
-      .then((json) =>
-        setData({
-          mainVar: json.main,
-          weather: json.weather[0],
-          sunTime: json.sys,
-        })
-      )
+      .then((json) => [
+        setWeather({
+          main: json.weather[0].main,
+          description: json.weather[0].description,
+          icon: json.weather[0].icon,
+          tempMin: json.main.temp_min,
+          tempMax: json.main.temp_max,
+          temp: json.main.temp,
+          humidity: json.main.humidity,
+          feelsLike: json.main.feels_like,
+          sunrise: json.sys.sunrise,
+          sunset: json.sys.sunset,
+        }),
+      ])
       .catch((error) => alert(error));
-    check2 = true;
   };
-  if (position.longitude) {
-    check1 = true;
-  }
+
   useEffect(() => {
-    if (position.latitude && check2 != true) {
+    if (position.latitude && check == false) {
+      setCheck(true);
       getWeather(position.latitude, position.longitude);
+      let clockCall = setInterval(() => {
+        getWeather(position.latitude, position.longitude);
+      }, 600000); //every 10 minutes, it updates
     }
-  }, [check1]);
-  return { ...Weather, dataWeather };
+  }, [check, position.longitude]);
+
+  return { ...Weather, weather };
 };

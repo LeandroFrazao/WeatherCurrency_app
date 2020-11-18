@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { Gps } from "./Gps";
 import { WeatherKey } from "../utils/APIKey";
+
 export const Weather = () => {
   const { position, error } = Gps();
-  const [check, setCheck] = useState(false);
   let [weather, setWeather] = useState({
     main: null,
     description: null,
@@ -15,6 +15,8 @@ export const Weather = () => {
     feelsLike: null,
     sunrise: null,
     sunset: null,
+    wind: null,
+    cloud: null,
   });
 
   const getWeather = async (lat, long) => {
@@ -32,6 +34,8 @@ export const Weather = () => {
           tempMax: json.main.temp_max,
           temp: json.main.temp,
           humidity: json.main.humidity,
+          wind: json.wind.speed,
+          cloud: json.clouds.all,
           feelsLike: json.main.feels_like,
           sunrise: json.sys.sunrise,
           sunset: json.sys.sunset,
@@ -41,14 +45,13 @@ export const Weather = () => {
   };
 
   useEffect(() => {
-    if (position.latitude && check == false) {
-      setCheck(true);
+    if (position.latitude) {
       getWeather(position.latitude, position.longitude);
       let clockCall = setInterval(() => {
         getWeather(position.latitude, position.longitude);
       }, 600000); //every 10 minutes, it updates
     }
-  }, [check, position.longitude]);
+  }, [position.longitude]);
 
   return { ...Weather, weather };
 };

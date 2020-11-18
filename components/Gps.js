@@ -48,7 +48,6 @@ export const Gps = () => {
 
   useEffect(() => {
     getCoord();
-
     let clockCall = setInterval(() => {
       getCoord();
     }, 300000); //every 5 minutes, it updates

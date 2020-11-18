@@ -1,13 +1,8 @@
 import { useState, useEffect } from "react";
-import { Gps } from "./Gps";
-import { WeatherKey } from "../utils/APIKey";
 import { Location } from "./Location";
-import { App } from "../App";
 
 export const Currency = () => {
   const { locationData } = Location();
-  const [countUsage, setCount] = useState(0);
-
   let [countryData, setCountryData] = useState({
     name: null,
     capital: null,
@@ -32,8 +27,7 @@ export const Currency = () => {
   });
 
   const getCountrydata = async (country) => {
-    setCount(countUsage + 1);
-    console.log("Inside fecht CountryData, count:", countUsage);
+    console.log("Inside fecht CountryData");
     await fetch(`https://restcountries.eu/rest/v2/name/${country}`)
       .then((response) => response.json())
       .then((json) => [

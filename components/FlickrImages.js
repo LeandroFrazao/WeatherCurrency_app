@@ -26,7 +26,6 @@ export const FlickrImages = (rand) => {
     if (weather.main && countryData.name) {
       let tags =
         weather.main + ", " + countryData.name + ", " + countryData.capital;
-      console.log(tags);
       getImages(tags, "astrophotography");
     }
   }, [weather.main, countryData.name]);

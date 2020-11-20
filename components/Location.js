@@ -31,7 +31,7 @@ export const Location = () => {
     if (position.latitude) {
       reversePosition(position.latitude, position.longitude);
     }
-  }, [position.longitude]);
+  }, [position.latitude]);
 
   return { ...Location, locationData };
 };

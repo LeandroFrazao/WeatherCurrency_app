@@ -8,7 +8,6 @@ export const Gps = () => {
     longitude: null,
   });
   const [error, setError] = useState(null);
-  let watchId;
 
   const onError = (error) => {
     setError(error.message);
@@ -22,8 +21,7 @@ export const Gps = () => {
     //       setError("Geolocation is not supported on your device");
     //       return;
     //     }
-
-    watchId = navigator.geolocation.watchPosition(
+    const watchId = navigator.geolocation.watchPosition(
       ({ coords }) => {
         setPosition({
           latitude: coords.latitude,
@@ -36,21 +34,12 @@ export const Gps = () => {
     return () => geo.clearWatch(watchId);
   };
 
-  // useEffect(() => {
-  //   let { status } = Location.requestPermissionsAsync();
-  //   if (status !== "granted") {
-  //     setError("Permission to access location was denied");
-  //   }
-
-  //   let location = Location.getCurrentPositionAsync({});
-  //   setPosition(location);
-  // }, []);
-
   useEffect(() => {
     getCoord();
-    let clockCall = setInterval(() => {
+    const clockCall = setInterval(() => {
       getCoord();
     }, 300000); //every 5 minutes, it updates
+    return () => clearInterval(clockCall);
   }, []);
 
   return { ...Gps, position, error };

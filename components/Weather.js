@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
 import { Gps } from "./Gps";
+import { Location } from "./Location";
 import { WeatherKey } from "../utils/APIKey";
 
 export const Weather = () => {
+  const { locationData } = Location();
   const { position, error } = Gps();
+
   let [weather, setWeather] = useState({
     main: null,
     description: null,
@@ -41,17 +44,19 @@ export const Weather = () => {
           sunset: json.sys.sunset,
         }),
       ])
-      .catch((error) => alert(error));
+      .catch((error) => alert("Reached Limit of API ", error));
   };
 
   useEffect(() => {
-    if (position.latitude) {
+    if (position.latitude && locationData.city) {
       getWeather(position.latitude, position.longitude);
-      let clockCall = setInterval(() => {
+      const clockCall = setInterval(() => {
+        console.log("test");
         getWeather(position.latitude, position.longitude);
-      }, 600000); //every 10 minutes, it updates
+      }, 300000); //every 5 minutes, it updates
+      return () => clearInterval(clockCall);
     }
-  }, [position.longitude]);
+  }, [locationData.city]);
 
   return { ...Weather, weather };
 };

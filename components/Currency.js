@@ -30,7 +30,7 @@ export const Currency = () => {
     console.log("Inside fecht CountryData");
     await fetch(`https://restcountries.eu/rest/v2/name/${country}`)
       .then((response) => response.json())
-      .then((json) => [
+      .then((json) =>
         setCountryData({
           name: json[0].name,
           capital: json[0].capital,
@@ -48,8 +48,8 @@ export const Currency = () => {
           currencyName: json[0].currencies[0].name,
           languages: json[0].languages,
           flag: json[0].flag,
-        }),
-      ])
+        })
+      )
       .catch((error) => alert(error));
   };
   const getCurrencyData = async () => {
@@ -64,23 +64,22 @@ export const Currency = () => {
       ])
       .catch((error) => alert(error));
   };
-  const convertCurrency = (amount, toUSD) => {
-    if (toUSD) {
-      let convertAmount = amount * currencyData.rate[countryData.currencyCode];
-      //setCurrencyData({ converted: convertAmount });
-    }
-  };
+
   useEffect(() => {
     if (locationData.country) {
       getCountrydata(locationData.country);
     }
   }, [locationData.country]);
-  useEffect(() => {
-    getCurrencyData();
-    let clockCall = setInterval(() => {
-      getCurrencyData();
-    }, 600000); //every 10 minute, it updates
-  }, []);
 
-  return { ...Currency, countryData, currencyData, convertCurrency };
+  useEffect(() => {
+    if (locationData.country) {
+      getCurrencyData();
+      let clockCall = setInterval(() => {
+        getCurrencyData();
+      }, 300000); //every 5 minute, it updates
+      return () => clearInterval(clockCall);
+    }
+  }, [locationData.country]);
+
+  return { ...Currency, countryData, currencyData };
 };

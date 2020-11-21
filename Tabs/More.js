@@ -14,6 +14,7 @@ import { ClimateCondition } from "../components/ClimateCondition";
 import { Card, Title, Paragraph } from "react-native-paper";
 
 export default function More(props) {
+  // load variables by props
   const position = props.position;
   const locationData = props.locationData;
   const weather = props.weather;
@@ -21,6 +22,7 @@ export default function More(props) {
   const countryData = props.countryData;
   const images = props.images;
 
+  // state variables
   const [dTable, setDTable] = useState(false);
   const [dateToday, setDateToday] = useState(new Date().toLocaleString());
 
@@ -60,6 +62,7 @@ export default function More(props) {
     }
   }
 
+  // function to store data in cache using AsyncStorage
   const storageInfo = async () => {
     try {
       const value = {
@@ -103,6 +106,7 @@ export default function More(props) {
     }
   };
 
+  //function to retrieve data saved in cache
   const loadInfo = async () => {
     let getData =
       (await AsyncStorage.getItem("places")) &&
@@ -137,6 +141,7 @@ export default function More(props) {
     );
   };
 
+  //check if variables were loaded, then renders. otherwise render the message " Loading .. ""
   if (weather.main && countryData.currencyName) {
     return (
       <View

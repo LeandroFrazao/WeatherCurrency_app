@@ -27,6 +27,7 @@ export const Currency = () => {
     date: null,
   });
 
+  // function to fecth api to get information of the country   // I im gonna implement extra information on the app later.
   const getCountrydata = async (country) => {
     console.log("Inside fecht CountryData");
     await fetch(`https://restcountries.eu/rest/v2/name/${country}`)
@@ -53,6 +54,8 @@ export const Currency = () => {
       )
       .catch((error) => alert(error));
   };
+
+  // function that fetch api to get currency rates
   const getCurrencyData = async () => {
     console.log("Inside fecht Currency");
     await fetch(`https://api.exchangeratesapi.io/latest?base=USD`)
@@ -66,12 +69,14 @@ export const Currency = () => {
       .catch((error) => alert(error));
   };
 
+  //call the function when locationData.country changes
   useEffect(() => {
     if (locationData.country) {
       getCountrydata(locationData.country);
     }
   }, [locationData.country]);
 
+  //call the function every 5 minutes, or if the locationData.country changes
   useEffect(() => {
     if (locationData.country) {
       getCurrencyData();

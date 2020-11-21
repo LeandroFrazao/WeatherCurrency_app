@@ -2,17 +2,18 @@ import React, { Component } from "react";
 import { useState, useEffect } from "react";
 import { FlickrKey } from "../utils/APIKey";
 import { Weather } from "./Weather";
+import { Location } from "./Location";
 import { Currency } from "./Currency";
 
 import { Gps } from "./Gps";
 
 export const FlickrImages = (rand) => {
-  const { position } = Gps();
   const { weather } = Weather();
   const { countryData } = Currency();
-
+  const { locationData } = Location();
   let [images, setImages] = useState([]);
-  //lat=${lat}&lon=${long}&
+
+  // function to fetch api to get astrophotos images based on weather country and city where the use is located
   const getImages = async (tag, condition) => {
     console.log("Inside fecht Flickr");
     await fetch(
@@ -26,7 +27,7 @@ export const FlickrImages = (rand) => {
   useEffect(() => {
     if (weather.main && countryData.name) {
       let tags =
-        weather.main + ", " + countryData.name + ", " + countryData.capital;
+        weather.main + ", " + countryData.name + ", " + locationData.city;
       getImages(tags, "astrophotography");
     }
   }, [weather.main, countryData.name]);

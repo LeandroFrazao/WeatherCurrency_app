@@ -1,3 +1,4 @@
+// array containing settings for each type of weather
 export const ClimateCondition = {
   Rain: {
     color: "rgba(0,91,234,0.2)", //"#005BEA",

@@ -16,6 +16,7 @@ import More from "./Tabs/More";
 
 const Tab = createBottomTabNavigator();
 
+//load variables
 export default function App() {
   const { position, error } = Gps();
   const { locationData } = Location();
@@ -28,6 +29,7 @@ export default function App() {
       <Tab.Navigator
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
+            //icon change according to the weather state
             let iconName;
             if (route.name === "Home") {
               iconName = focused
@@ -53,6 +55,7 @@ export default function App() {
           name="Home"
           children={() => (
             <Home
+              //pass components by props
               gps={Gps()}
               location={Location()}
               weather={Weather()}
@@ -65,6 +68,7 @@ export default function App() {
           name="More"
           children={() => (
             <More
+              //pass variables by props
               position={position}
               locationData={locationData}
               weather={weather}

@@ -23,6 +23,7 @@ export const Weather = () => {
     cloud: null,
   });
 
+  //function to fetch api to get weather data based on position
   const getWeather = async (lat, long) => {
     console.log("Inside fecht Weather");
     await fetch(
@@ -48,6 +49,7 @@ export const Weather = () => {
       .catch((error) => alert("Reached Limit of API ", error));
   };
 
+  // every 5 min or if city changes, it calls the function getWeather
   useEffect(() => {
     if (position.latitude && locationData.city) {
       getWeather(position.latitude, position.longitude);

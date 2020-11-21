@@ -18,17 +18,20 @@ import { SvgCssUri } from "react-native-svg"; //to open svg files
 import { ClimateCondition } from "../components/ClimateCondition";
 
 export default function Home(props) {
+  // load variables by props
   const { position, error } = props.gps;
   const { locationData } = props.location;
   const { weather } = props.weather;
   const { currencyData, countryData } = props.currency;
   const { images } = props.flickrImages;
 
+  // state variables
   const [amount, setAmount] = useState(0);
   const [converted, setConverted] = useState(0);
   const [toUSD, setToUSD] = useState(true);
   const [backgroundURI, setBackgroundURI] = useState("");
 
+  //for dev purpose, it shows information in the console.
   useEffect(() => {
     if (countryData.name && weather.main && images[0]) {
       console.log(countryData);

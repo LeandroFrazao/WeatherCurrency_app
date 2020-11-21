@@ -24,20 +24,8 @@ export const Gps = () => {
     })();
   }, []);
 
+  // function to access the GPS from device, and returns latitude and longitude
   const getCoord = () => {
-    // navigator.permissions
-    //   .query({ name: "geolocation" })
-    //   .then(function (result) {
-    //     if (result.state != "granted") {
-    //       setError("Geolocation is not supported on your device");
-    //       return;
-    //     }
-    //   });
-    if (navigator.geolocation) {
-    } else {
-      alert("Geolocation is not supported on your device");
-    }
-
     const watchId = navigator.geolocation.watchPosition(
       ({ coords }) => {
         setPosition({
@@ -52,11 +40,16 @@ export const Gps = () => {
   };
 
   useEffect(() => {
-    getCoord();
-    const clockCall = setInterval(() => {
+    // check permissions
+    if (navigator.geolocation) {
       getCoord();
-    }, 300000); //every 5 minutes, it updates
-    return () => clearInterval(clockCall);
+      const clockCall = setInterval(() => {
+        getCoord();
+      }, 300000); //every 5 minutes, it updates
+      return () => clearInterval(clockCall);
+    } else {
+      alert("Geolocation is not supported on your device");
+    }
   }, []);
 
   return { ...Gps, position, error };

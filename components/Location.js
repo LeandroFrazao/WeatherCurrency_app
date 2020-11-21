@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { useState, useEffect } from "react";
 import { Gps } from "./Gps";
 import { LocationKey } from "../utils/APIKey";
+
 export const Location = () => {
   const { position } = Gps();
   let [locationData, setLocation] = useState({
@@ -11,6 +12,7 @@ export const Location = () => {
     state: null,
   });
 
+  // function to fetch apo to get location data based on position.
   const reversePosition = async (lat, long) => {
     console.log("Inside fecht Location");
     await fetch(
@@ -28,6 +30,7 @@ export const Location = () => {
       .catch((error) => alert(error));
   };
 
+  // it calls everytime latitude changes
   useEffect(() => {
     if (position.latitude) {
       reversePosition(position.latitude, position.longitude);

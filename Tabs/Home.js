@@ -1,6 +1,5 @@
-import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
-import React, { isValidElement } from "react";
+import React, { Component } from "react";
 import {
   StyleSheet,
   Text,
@@ -10,17 +9,13 @@ import {
   TextInput,
   Button,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons"; // to load weather icons
 import { SvgCssUri } from "react-native-svg"; //to open svg files
 
 //importing components
-import { Location } from "../components/Location";
-import { Gps } from "../components/Gps";
-import { Weather } from "../components/Weather";
 import { ClimateCondition } from "../components/ClimateCondition";
-import { Currency } from "../components/Currency";
-import { FlickrImages } from "../components/FlickrImages";
 
 export default function Home(props) {
   const { position, error } = props.gps;
@@ -132,6 +127,7 @@ export default function Home(props) {
                     name={ClimateCondition[weather.main].icon}
                     color={"#fff"}
                   />
+                  {/* I used a function to round the value of temperature  */}
                   <Text style={styles.h2}>
                     {parseInt(Math.round(weather.temp / 0.5) * 0.5)}˚
                   </Text>
@@ -180,18 +176,21 @@ export default function Home(props) {
                   style={styles.touch}
                   onPress={() => convertCurrency(true)}
                 >
-                  <ImageBackground
-                    source={{ uri: "https://restcountries.eu/data/usa.svg" }}
-                    style={styles.backgroundFlag}
-                  />
-                  {/* <SvgCssUri
-                    width={styles.backgroundFlag.width}
-                    height={styles.backgroundFlag.height}
-                    viewBox="0 0 1100 600"
-                    uri="https://restcountries.eu/data/usa.svg"
-                    preserveAspectRatio="xMinYMax meet"
-                    style={[styles.backgroundFlag]}
-                  /> */}
+                  {Platform.OS != "web" ? ( //  only works in MOBILE
+                    <SvgCssUri
+                      width={styles.backgroundFlag.width}
+                      height={styles.backgroundFlag.height}
+                      viewBox="0 0 1100 600"
+                      uri="https://restcountries.eu/data/usa.svg"
+                      preserveAspectRatio="xMinYMax meet"
+                      style={[styles.backgroundFlag]}
+                    />
+                  ) : (
+                    <ImageBackground
+                      source={{ uri: "https://restcountries.eu/data/usa.svg" }}
+                      style={styles.backgroundFlag}
+                    />
+                  )}
                   <Text style={styles.h3}>USD</Text>
                 </TouchableOpacity>
                 <Text style={styles.h2}>{toUSD ? ">>>" : "<<<"}</Text>
@@ -199,18 +198,21 @@ export default function Home(props) {
                   style={styles.touch}
                   onPress={() => convertCurrency(false)}
                 >
-                  <ImageBackground
-                    source={{ uri: countryData.flag }}
-                    style={styles.backgroundFlag}
-                  />
-                  {/* <SvgCssUri
-                    width={styles.backgroundFlag.width}
-                    height={styles.backgroundFlag.height}
-                    viewBox="0 0 1100 600"
-                    uri={countryData.flag}
-                    preserveAspectRatio="xMinYMax meet"
-                    style={[styles.backgroundFlag]}
-                  /> */}
+                  {Platform.OS != "web" ? ( //  only works in MOBILE
+                    <SvgCssUri
+                      width={styles.backgroundFlag.width}
+                      height={styles.backgroundFlag.height}
+                      viewBox="0 0 1100 600"
+                      uri={countryData.flag}
+                      preserveAspectRatio="xMinYMax meet"
+                      style={[styles.backgroundFlag]}
+                    />
+                  ) : (
+                    <ImageBackground
+                      source={{ uri: countryData.flag }}
+                      style={styles.backgroundFlag}
+                    />
+                  )}
                   <Text style={styles.h3}>{countryData.currencyCode}</Text>
                 </TouchableOpacity>
               </View>
@@ -305,34 +307,26 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 20,
+
+    marginVertical: 20,
   },
   bodyWeather: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 20,
-    //borderWidth: 2,
-    // borderColor: "red",
   },
   bodyWeatherChild0: {
-    // borderWidth: 2,
-    // borderColor: "red",
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 10,
-    // marginBottom: 20,
     flexDirection: "row",
   },
   bodyWeatherChild1: {
-    //borderWidth: 2,
-    // borderColor: "pink",
     alignItems: "flex-end",
     justifyContent: "flex-start",
     alignContent: "flex-start",
-
     paddingHorizontal: 10,
-    // marginBottom: 20,
     flexDirection: "row",
   },
   bodyWeatherChild2: {
@@ -340,37 +334,25 @@ const styles = StyleSheet.create({
   },
   bodyCurrency: {
     flex: 2,
-    //borderWidth: 2,
-    // borderColor: "red",
     alignItems: "center",
     justifyContent: "center",
     alignContent: "flex-start",
     width: "100%",
   },
   bodyCurrencyChild1: {
-    //flex: 2,
-    //borderWidth: 2,
-    //borderColor: "gray",
     alignItems: "center",
     justifyContent: "flex-end",
     marginBottom: 10,
   },
   bodyCurrencyChild2: {
-    // flex: 2,
-    //borderWidth: 2,
-    //borderColor: "gray",
     alignItems: "center",
     justifyContent: "flex-start",
     marginBottom: 10,
     flexDirection: "row",
   },
   bodyCurrencyChild3: {
-    // flex: 1,
-    //borderWidth: 2,
-    //borderColor: "gray",
     alignItems: "center",
     justifyContent: "center",
-    // paddingLeft: 30,
     marginBottom: 10,
     minWidth: 300,
     flexDirection: "row",
@@ -383,7 +365,6 @@ const styles = StyleSheet.create({
   },
 
   touch: {
-    //flex: 1,
     backgroundColor: "rgba(0,0,10,0.3)",
     borderWidth: 2,
     borderColor: "gray",
@@ -395,7 +376,6 @@ const styles = StyleSheet.create({
   },
   input: {
     fontSize: 16,
-    //color: "#fff",
     width: 150,
     backgroundColor: "rgba(0,0,0,0.4)", // 40% opaque
     color: "white",
@@ -406,7 +386,5 @@ const styles = StyleSheet.create({
     width: 100,
     textAlign: "right",
     paddingRight: 10,
-    //borderWidth: 2,
-    // borderColor: "red",
   },
 });

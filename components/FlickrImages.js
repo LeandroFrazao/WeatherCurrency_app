@@ -1,3 +1,4 @@
+import React, { Component } from "react";
 import { useState, useEffect } from "react";
 import { FlickrKey } from "../utils/APIKey";
 import { Weather } from "./Weather";

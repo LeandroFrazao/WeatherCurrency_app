@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 //import { Location, Permissions } from "expo-permissions";
 //import * as Permissions from "expo-permissions";
+import React, { Component } from "react";
 import * as Location from "expo-location";
 export const Gps = () => {
   let [position, setPosition] = useState({
@@ -13,6 +14,16 @@ export const Gps = () => {
     setError(error.message);
   };
 
+  //Function to get permission
+  React.useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestPermissionsAsync();
+      if (status !== "granted") {
+        setErrorMsg("Permission to access location was denied");
+      }
+    })();
+  }, []);
+
   const getCoord = () => {
     // navigator.permissions
     //   .query({ name: "geolocation" })
@@ -21,6 +32,12 @@ export const Gps = () => {
     //       setError("Geolocation is not supported on your device");
     //       return;
     //     }
+    //   });
+    if (navigator.geolocation) {
+    } else {
+      alert("Geolocation is not supported on your device");
+    }
+
     const watchId = navigator.geolocation.watchPosition(
       ({ coords }) => {
         setPosition({

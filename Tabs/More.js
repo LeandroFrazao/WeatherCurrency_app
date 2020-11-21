@@ -1,6 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect, useState } from "react";
-import React from "react";
+import React, { Component, useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
@@ -8,12 +7,11 @@ import {
   Button,
   ScrollView,
   Alert,
+  Platform,
 } from "react-native";
-
 //importing components
 import { ClimateCondition } from "../components/ClimateCondition";
-import { DataTable } from "react-native-paper";
-import { Avatar, Card, Title, Paragraph, FAB } from "react-native-paper";
+import { Card, Title, Paragraph } from "react-native-paper";
 
 export default function More(props) {
   const position = props.position;
@@ -23,11 +21,6 @@ export default function More(props) {
   const countryData = props.countryData;
   const images = props.images;
 
-  //const { dTable } = DataTable();
-  const [amount, setAmount] = useState(0);
-  const [converted, setConverted] = useState(0);
-  const [toUSD, setToUSD] = useState(true);
-  const [backgroundURI, setBackgroundURI] = useState("");
   const [dTable, setDTable] = useState(false);
   const [dateToday, setDateToday] = useState(new Date().toLocaleString());
 
@@ -87,27 +80,23 @@ export default function More(props) {
 
       await AsyncStorage.setItem("value", JSON.stringify(value));
       let places = JSON.parse(await AsyncStorage.getItem("places")) || [];
-      places.push(value);
+      places.unshift(value);
       await AsyncStorage.setItem("places", JSON.stringify(places));
-
-      () =>
-        Alert.alert(
-          "Information",
-          "Data Saved"[
-            ({
-              text: "Ask me later",
-              onPress: () => console.log("Ask me later pressed"),
-            },
-            {
-              text: "Cancel",
-              onPress: () => console.log("Cancel Pressed"),
-              style: "cancel",
-            },
-            { text: "OK", onPress: () => console.log("OK Pressed") })
-          ],
-          { cancelable: false }
-        );
-      alert("Information", "Data Saved!!");
+      // alert("Data Saved!!");
+      loadInfo();
+      if (Platform.OS == "web") {
+        alert("Data Saved!");
+      }
+      Alert.alert(
+        "Information",
+        "Data Saved!",
+        [
+          {
+            text: "OK",
+          },
+        ],
+        { cancelable: false }
+      );
       loadInfo();
     } catch (e) {
       console.log("error: ", e);
@@ -119,6 +108,33 @@ export default function More(props) {
       (await AsyncStorage.getItem("places")) &&
       JSON.parse(await AsyncStorage.getItem("places"));
     setDTable(getData);
+  };
+
+  const cleanStorage = async () => {
+    if (Platform.OS == "web") {
+      if (confirm("Confirm to clean data?")) {
+        await AsyncStorage.clear().then(() => console.log("Cleared"));
+        loadInfo();
+      }
+    }
+    Alert.alert(
+      "Clean Data",
+      "Confirm?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: async () => {
+            await AsyncStorage.clear().then(() => console.log("Cleared"));
+            loadInfo();
+          },
+        },
+      ],
+      { cancelable: false }
+    );
   };
 
   if (weather.main && countryData.currencyName) {
@@ -138,7 +154,7 @@ export default function More(props) {
           <Text style={styles.h4}>
             {dateToday} - {locationData.city}, {locationData.country} {"\n"}Lat:{" "}
             {position.latitude}, Long:{position.longitude}
-            {"\n"}Weather: {ClimateCondition[weather.main].title} Temperature:{" "}
+            {"\n"}Weather: {ClimateCondition[weather.main].title}, Temperature:{" "}
             {parseInt(Math.round(weather.temp / 0.5) * 0.5)}°, Feels Like:{" "}
             {parseInt(Math.round(weather.feelsLike / 0.5) * 0.5)}˚{"\n"}
             Currency: $1 = {currencyData.rate[countryData.currencyCode]}{" "}
@@ -147,99 +163,54 @@ export default function More(props) {
           </Text>
           <View style={styles.button}>
             <Button
-              title="Click to Save"
+              title="Save Data"
               color="rgba(166, 225, 255,0.5)"
               onPress={() => storageInfo()}
             />
           </View>
-        </View>
-        <ScrollView>
-          <View>
-            {dTable &&
-              dTable.map((data, index) => (
-                <Card
-                  key={index}
-                  style={{
-                    backgroundColor: ClimateCondition[data.weather].color,
-                  }}
-                >
-                  <Card.Title title={data.city} subtitle={data.country} />
-                  <Card.Content>
-                    <Paragraph style={styles.h5}>{data.dateTime}</Paragraph>
-                    <Title style={styles.h3}>Information</Title>
-                    <Paragraph style={styles.h4}>
-                      Weather: {ClimateCondition[data.weather].title},
-                      Temperature: {data.temperature}, Feels Like:{" "}
-                      {data.feelslike}
-                    </Paragraph>
-                    <Paragraph style={styles.h4}>
-                      {" "}
-                      Currency: $1 = {data.currency}{" "}
-                    </Paragraph>
-                    <Paragraph style={styles.h4}>
-                      Position: Lat. {position.latitude}, Long.{" "}
-                      {position.longitude}
-                    </Paragraph>
-                  </Card.Content>
-                  {<Card.Cover source={data.background} />}
-                </Card>
-              ))}
+          <View style={styles.button}>
+            <Button
+              title="Clear Data"
+              color="rgba(166, 225, 255,0.5)"
+              onPress={() => cleanStorage()}
+            />
           </View>
-        </ScrollView>
-
-        <ScrollView
-          horizontal={true}
-          showsHorizontalScrollIndicator={false}
-          pagingEnabled={true}
-        >
-          <View>
-            <DataTable>
-              <DataTable.Header>
-                <DataTable.Title style={{ width: 100 }}>
-                  Date/Time
-                </DataTable.Title>
-
-                <DataTable.Title>City</DataTable.Title>
-
-                <DataTable.Title>Country</DataTable.Title>
-
-                <DataTable.Title>Weather</DataTable.Title>
-
-                <DataTable.Title>Temp</DataTable.Title>
-                <DataTable.Title>Feelslike</DataTable.Title>
-                <DataTable.Title>Currency</DataTable.Title>
-                <DataTable.Title>Lat</DataTable.Title>
-                <DataTable.Title>Long</DataTable.Title>
-              </DataTable.Header>
-
+        </View>
+        <>
+          <ScrollView>
+            <View style={styles.bodyCard}>
               {dTable &&
                 dTable.map((data, index) => (
-                  <DataTable.Row key={index}>
-                    <DataTable.Cell style={{ flex: 3 }}>
-                      {data.dateTime}
-                    </DataTable.Cell>
-                    <DataTable.Cell>{data.city}</DataTable.Cell>
-                    <DataTable.Cell>{data.country}</DataTable.Cell>
-                    <DataTable.Cell>{data.weather}</DataTable.Cell>
-                    <DataTable.Cell>{data.temperature}</DataTable.Cell>
-                    <DataTable.Cell>{data.feelslike}</DataTable.Cell>
-                    <DataTable.Cell>{data.currency}</DataTable.Cell>
-                    <DataTable.Cell>{data.long}</DataTable.Cell>
-                    <DataTable.Cell>{data.lat}</DataTable.Cell>
-                  </DataTable.Row>
+                  <Card
+                    key={index}
+                    style={{
+                      backgroundColor: ClimateCondition[data.weather].color,
+                    }}
+                  >
+                    {<Card.Cover source={data.background} />}
+                    <Card.Title title={data.city} subtitle={data.country} />
+                    <Card.Content>
+                      <Paragraph style={styles.h5}>{data.dateTime}</Paragraph>
+                      <Title style={styles.h3}>Information</Title>
+                      <Paragraph style={styles.h4}>
+                        Weather: {ClimateCondition[data.weather].title},
+                        Temperature: {data.temperature}, Feels Like:{" "}
+                        {data.feelslike}
+                      </Paragraph>
+                      <Paragraph style={styles.h4}>
+                        {" "}
+                        Currency: $1 = {data.currency}{" "}
+                      </Paragraph>
+                      <Paragraph style={styles.h4}>
+                        Position: Lat. {position.latitude}, Long.{" "}
+                        {position.longitude}
+                      </Paragraph>
+                    </Card.Content>
+                  </Card>
                 ))}
-
-              <DataTable.Pagination
-                page={1}
-                numberOfPages={3}
-                onPageChange={(page) => {
-                  console.log(page);
-                }}
-                label="1-2 of 6"
-              />
-            </DataTable>
-          </View>
-        </ScrollView>
+            </View>
+          </ScrollView>
+        </>
       </View>
     );
   } else {
@@ -296,22 +267,20 @@ const styles = StyleSheet.create({
     textAlign: "left",
   },
   bodyInfo: {
-    //flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 20,
+    marginTop: 40,
+    marginVertical: 30,
     width: 350,
-    paddingVertical: 50,
+    paddingVertical: 10,
     backgroundColor: "rgba(83, 96, 138, 0.5)",
   },
-  button: {
-    marginTop: 20,
+  bodyCard: {
+    //alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 20,
   },
-
-  backgroundFlag: {
-    height: 40,
-    width: 80,
-    opacity: 0.3,
-    position: "absolute",
+  button: {
+    marginVertical: 5,
   },
 });

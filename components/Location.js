@@ -1,3 +1,4 @@
+import React, { Component } from "react";
 import { useState, useEffect } from "react";
 import { Gps } from "./Gps";
 import { LocationKey } from "../utils/APIKey";
